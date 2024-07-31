@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/mapFragment2"
+    <item android:id="@+id/navigation2"
         android:title="@string/map"
         android:icon="@drawable/baseline_map_24" />
-    <item android:id="@+id/navigation2"
+    <item android:id="@+id/sign_up_sign_in_navigation"
         android:title="@string/account"
         android:icon="@drawable/baseline_person_24"/>
-    <item android:id="@+id/add"
-        android:title="@string/add"
-        android:icon="@drawable/baseline_library_add_24"/>
-    <item android:id="@+id/settings"
-        android:title="@string/settings"
-        android:icon="@drawable/baseline_settings_24"/>
+    <item android:id="@+id/house_suggestions_navigation"
+        android:title="@string/house_suggestions"
+        android:icon="@drawable/baseline_home_work_24"/>
+    <item android:id="@+id/comment_suggestions_navigation"
+        android:title="@string/comment_suggestions"
+        android:icon="@drawable/baseline_add_comment_24"/>
+    <item android:id="@+id/correction_suggestions_navigation"
+        android:title="@string/correction_suggestions"
+        android:icon="@drawable/baseline_dynamic_feed_24"/>
 </menu>

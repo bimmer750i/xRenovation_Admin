@@ -1,7 +1,7 @@
 package broz.tito.xrenovation.presentation.di
 
 import android.content.Context
-import broz.tito.xrenovation.presentation.AccountFragment
+import broz.tito.xrenovation.presentation.*
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -12,6 +12,34 @@ import javax.inject.Singleton
 interface AppComponent {
 
     fun inject(accountFragment : AccountFragment)
+
+    fun inject(signInFragment: SignInFragment)
+
+    fun inject(enterNameFragment: EnterNameFragment)
+
+    fun inject(accountInfoFragment: AccountInfoFragment)
+
+    fun inject(startFragment: StartFragment)
+
+    fun inject(enterEmailFragment: EnterEmailFragment)
+
+    fun inject(addHouseFragment: AddHouseFragment)
+
+    fun inject(findHouseOnMapFragment: FindHouseOnMapFragment)
+
+    fun inject(mapFragment: MapFragment)
+
+    fun inject(houseFragment : HouseFragment)
+
+    fun inject(houseCorrectionFragment: HouseCorrectionFragment)
+
+    fun inject(editHouseFragment: EditHouseFragment)
+
+    fun inject(correctionsFragment: CorrectionsFragment)
+
+    fun inject(houseSuggestionsFragment: HouseSuggestionsFragment)
+
+    fun inject(editSuggestedHouseFragment: EditSuggestedHouseFragment)
 
     @Component.Builder
     interface Builder {
