@@ -46,4 +46,6 @@ interface AddHouseRepository {
 
     fun deleteSuggestedHouse(suggestedHouseId : String, accessToken: String) : Flow<DeleteSuggestedHouseResult>
 
+    fun deleteSuggestedPoint(suggestedHouseId : String, accessToken: String) : Flow<DeletePointResult>
+
 }

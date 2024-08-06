@@ -91,4 +91,8 @@ class AddHouseRepositoryImpl @Inject constructor(val model: HouseModel) : AddHou
     override fun deleteSuggestedHouse(suggestedHouseId : String, accessToken: String): Flow<DeleteSuggestedHouseResult> {
         return model.deleteSuggestedHouse(suggestedHouseId, accessToken)
     }
+
+    override fun deleteSuggestedPoint(suggestedHouseId: String, accessToken: String): Flow<DeletePointResult> {
+        return model.deleteSuggestedPoint(suggestedHouseId, accessToken)
+    }
 }

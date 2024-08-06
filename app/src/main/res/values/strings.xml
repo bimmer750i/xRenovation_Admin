@@ -101,4 +101,5 @@
     <string name="correction_suggestions">Correction suggestions</string>
     <string name="delete_correction">Delete correction?</string>
     <string name="edit_suggested_house">Edit suggested House</string>
+    <string name="publish_house">publish house</string>
 </resources>

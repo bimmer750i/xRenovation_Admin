@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavArgs
 import androidx.navigation.fragment.findNavController
@@ -21,9 +22,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.AlertDialogAddUrlBinding
 import broz.tito.xrenovation.admin.databinding.FragmentEditSuggestedHouseBinding
+import broz.tito.xrenovation.data.add_house.entities.FailureEditHouseResult
 import broz.tito.xrenovation.data.add_house.entities.House
+import broz.tito.xrenovation.data.add_house.entities.HousePoint
 import broz.tito.xrenovation.data.add_house.entities.LatLon
+import broz.tito.xrenovation.data.add_house.entities.PendingEditHouseResult
 import broz.tito.xrenovation.data.add_house.entities.SearchPointAddress
+import broz.tito.xrenovation.data.add_house.entities.SuccessEditHouseResult
 import broz.tito.xrenovation.presentation.adapters.PhotoItemTouchHelperCallback
 import broz.tito.xrenovation.presentation.adapters.PhotoRecyclerViewAdapter
 import broz.tito.xrenovation.presentation.models.EditSuggestedHouseViewModel
@@ -96,6 +101,22 @@ class EditSuggestedHouseFragment : Fragment() {
         val itemTouchHelperCallback = PhotoItemTouchHelperCallback()
         val photoItemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         photoItemTouchHelper.attachToRecyclerView(binding.recyclerviewSuggestedHouseChosenPhoto)
+        viewModel.editHouseResult.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is PendingEditHouseResult -> {
+                    binding.buttonPublishSuggestedHouse.startAnimation()
+                }
+                is SuccessEditHouseResult -> {
+                    viewModel.publishSuggestedPoint(HousePoint(houseId,
+                        LatLon(housePoint!!.latitude,housePoint!!.longitude)
+                    ),houseId,requireContext())
+                }
+                is FailureEditHouseResult -> {
+                    binding.buttonPublishSuggestedHouse.stopAnimation()
+                }
+
+            }
+        })
         binding.imageViewSuggestedHouseAddressLocation.setOnClickListener {
             if (housePoint != null) {
                 val directions = EditSuggestedHouseFragmentDirections.actionEditSuggestedHouseFragmentToFindHouseOnMapFragment(
@@ -133,6 +154,20 @@ class EditSuggestedHouseFragment : Fragment() {
                 val longitude = bundle.getDouble(FindHouseOnMapFragment.LONGITUDE)
                 housePoint = Point(latitude,longitude)
             }
+        }
+        binding.buttonPublishSuggestedHouse.setOnClickListener {
+            viewModel.deleteSuggestedHouse(requireContext(),houseId)
+            viewModel.deleteSuggestedPoint(requireContext(),houseId)
+            viewModel.publishSuggestedHouse(requireContext(),houseId,
+                House(LatLon(housePoint!!.latitude,housePoint!!.longitude),
+                binding.autoCompleteTextViewSuggestedHouse.text.toString(),
+                    binding.editTextSuggestedHouseNumberOfFloors.text.toString(),
+                    binding.editTextSuggestedHouseNumberOfFlats.text.toString(),
+                    binding.editTextSuggestedHouseConstructionYear.text.toString(),
+                    binding.editTextSuggestedHouseDescription.text.toString(),
+                    photoList,
+                    urlList)
+                )
         }
 
     }

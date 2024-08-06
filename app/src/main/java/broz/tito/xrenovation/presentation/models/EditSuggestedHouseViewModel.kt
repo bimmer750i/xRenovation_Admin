@@ -7,7 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import broz.tito.xrenovation.data.add_house.entities.AddHousePointResult
 import broz.tito.xrenovation.data.add_house.entities.AddHouseResult
+import broz.tito.xrenovation.data.add_house.entities.DeletePointResult
+import broz.tito.xrenovation.data.add_house.entities.DeleteSuggestedHouseResult
 import broz.tito.xrenovation.data.add_house.entities.EditHouseResult
+import broz.tito.xrenovation.data.add_house.entities.House
+import broz.tito.xrenovation.data.add_house.entities.HousePoint
 import broz.tito.xrenovation.data.add_house.entities.LoadPhotosResult
 import broz.tito.xrenovation.data.add_house.entities.SearchPointResult
 import broz.tito.xrenovation.data.add_house.entities.SuggestAddressResult
@@ -19,6 +23,7 @@ import broz.tito.xrenovation.domain.AddHousePointUseCase
 import broz.tito.xrenovation.domain.AddHouseUseCase
 import broz.tito.xrenovation.domain.DeleteHousePhotoUseCase
 import broz.tito.xrenovation.domain.DeleteSuggestedHouseUseCase
+import broz.tito.xrenovation.domain.DeleteSuggestedPointUseCase
 import broz.tito.xrenovation.domain.EditHouseUseCase
 import broz.tito.xrenovation.domain.GetAccountInfoUseCase
 import broz.tito.xrenovation.domain.LoadPhotosToFireBaseUseCase
@@ -36,14 +41,14 @@ class EditSuggestedHouseViewModel @Inject constructor(val getAccountInfoUseCase:
                                                       val refreshTokenUseCase: RefreshTokenUseCase,
                                                       val saveAuthResponseUseCase: SaveAuthResponseUseCase,
                                                       val sharedPrefsModel: SharedPrefsModel,
+                                                      val addHousePointUseCase: AddHousePointUseCase,
                                                       val suggestAddressUseCase: SuggestAddressUseCase,
                                                       val searchPointUseCase: SearchPointUseCase,
                                                       private val loadPhotosToFireBaseUseCase: LoadPhotosToFireBaseUseCase,
-                                                      val addHouseUseCase: AddHouseUseCase,
-                                                      val addHousePointUseCase: AddHousePointUseCase,
                                                       val editHouseUseCase: EditHouseUseCase,
                                                       val deleteHousePhotoUseCase: DeleteHousePhotoUseCase,
-                                                      val deleteSuggestedHouseUseCase: DeleteSuggestedHouseUseCase
+                                                      val deleteSuggestedHouseUseCase: DeleteSuggestedHouseUseCase,
+                                                      val deleteSuggestedPointUseCase : DeleteSuggestedPointUseCase
 ) : ViewModel() {
 
     private val _getAccountInfoResult = MutableLiveData<GetAccountInfoResult>()
@@ -69,6 +74,12 @@ class EditSuggestedHouseViewModel @Inject constructor(val getAccountInfoUseCase:
 
     private val _editHouseResult = MutableLiveData<EditHouseResult>()
     val editHouseResult : LiveData<EditHouseResult> = _editHouseResult
+
+    private val _deleteSuggestedHouseResult = MutableLiveData<DeleteSuggestedHouseResult>()
+    val deleteSuggestedHouseResult : LiveData<DeleteSuggestedHouseResult> = _deleteSuggestedHouseResult
+
+    private val _deleteSuggestedPointResult = MutableLiveData<DeletePointResult>()
+    val deleteSuggestedPointResult : LiveData<DeletePointResult> = _deleteSuggestedPointResult
 
     fun getAccountInfo(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -96,5 +107,38 @@ class EditSuggestedHouseViewModel @Inject constructor(val getAccountInfoUseCase:
             }.collect()
         }
     }
+
+    fun deleteSuggestedHouse(context: Context,suggestedHouseId : String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteSuggestedHouseUseCase(suggestedHouseId,sharedPrefsModel.getIdToken(context)).onEach {
+                _deleteSuggestedHouseResult.postValue(it)
+            }.collect()
+        }
+    }
+
+    fun deleteSuggestedPoint(context: Context,suggestedHouseId : String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteSuggestedPointUseCase(suggestedHouseId,sharedPrefsModel.getIdToken(context)).onEach {
+                _deleteSuggestedPointResult.postValue(it)
+            }.collect()
+        }
+    }
+
+    fun publishSuggestedHouse(context: Context,suggestedHouseId: String,house: House) {
+        viewModelScope.launch(Dispatchers.IO) {
+            editHouseUseCase(suggestedHouseId,house,sharedPrefsModel.getIdToken(context)).onEach {
+                _editHouseResult.postValue(it)
+            }.collect()
+        }
+    }
+
+    fun publishSuggestedPoint(housePoint: HousePoint,suggestedHouseId: String,context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addHousePointUseCase(housePoint,suggestedHouseId,sharedPrefsModel.getIdToken(context)).onEach {
+                _addHousePointResult.postValue(it)
+            }.collect()
+        }
+    }
+
 
 }

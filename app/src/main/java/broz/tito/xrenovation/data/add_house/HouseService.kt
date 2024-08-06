@@ -62,4 +62,7 @@ interface HouseService {
 
     @DELETE("houses-suggestions/{suggestedHouseId}.json")
     suspend fun deleteSuggestedHouse(@Path("suggestedHouseId") suggestedHouseId : String, @Query("auth") accessToken : String) : Response<JsonElement>
+
+    @DELETE("points-suggestions/{suggestedHouseId}.json")
+    suspend fun deleteSuggestedPoint(@Path("suggestedHouseId") suggestedHouseId : String, @Query("auth") accessToken : String) : Response<JsonElement>
 }

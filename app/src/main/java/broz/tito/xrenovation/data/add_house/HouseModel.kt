@@ -690,10 +690,33 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
         }
         catch (e : Exception) {
             result = FailureDeleteSuggestedHouseResult(e.message.toString())
-            Log.d(TAG, "deleteSuggestedHouse -- failure -- ${e.message}")
+            Log.d(TAG, "deleteSuggestedHouse -- failure -- exception -- ${e.message}")
         }
         emit(result)
     }.flowOn(Dispatchers.IO)
+
+    fun deleteSuggestedPoint(suggestedHouseId : String, accessToken: String) : Flow<DeletePointResult> = flow {
+        var result : DeletePointResult = PendingDeletePointResult()
+        emit(result)
+        try {
+            val response = houseService.deleteSuggestedPoint(suggestedHouseId,accessToken)
+            if (!response.isSuccessful) {
+                result = FailureDeletePointResult(response.body().toString())
+                Log.d(TAG, "deleteSuggestedPoint -- failure -- ${response.message()} -- ${response.errorBody()} -- ${response.raw()} ")
+            }
+            else {
+                result = SuccessDeletePointResult()
+                Log.d(TAG, "deleteSuggestedPoint -- success ")
+            }
+        }
+        catch (e : Exception) {
+            result = FailureDeletePointResult(e.message.toString())
+            Log.d(TAG, "deleteSuggestedPoint -- failure -- ${e.message.toString()}")
+        }
+        emit(result)
+    }.flowOn(Dispatchers.IO)
+
+
 
 
     companion object {
