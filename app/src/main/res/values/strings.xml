@@ -102,4 +102,6 @@
     <string name="delete_correction">Delete correction?</string>
     <string name="edit_suggested_house">Edit suggested House</string>
     <string name="publish_house">publish house</string>
+    <string name="publish_comment">Publish comment</string>
+    <string name="delete_comment">Delete comment</string>
 </resources>

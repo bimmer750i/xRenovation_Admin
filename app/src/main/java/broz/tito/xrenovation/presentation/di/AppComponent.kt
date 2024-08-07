@@ -41,6 +41,8 @@ interface AppComponent {
 
     fun inject(editSuggestedHouseFragment: EditSuggestedHouseFragment)
 
+    fun inject(commentSuggestionsFragment: CommentSuggestionsFragment)
+
     @Component.Builder
     interface Builder {
 

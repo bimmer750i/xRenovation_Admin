@@ -716,6 +716,35 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
         emit(result)
     }.flowOn(Dispatchers.IO)
 
+    fun getCommentSuggestions() : Flow<GetCommentsResult> = flow {
+        var result : GetCommentsResult = PendingGetCommentsResult()
+        emit(result)
+        try {
+            val response = houseService.getCommentSuggestions()
+            Log.d(TAG, "getCommentSuggestions -- body -- ${response.body()}")
+            if (!response.isSuccessful) {
+                result = FailureGetCommentsResult(response.body().toString())
+                Log.d(TAG, "getCommentSuggestions -- failure -- ${response.body().toString()}")
+            }
+            else {
+                response.body()?.let {
+                    if (it is JsonNull) {
+                        result= RawSuccessGetCommentsResult(JsonObject())
+                        Log.d(TAG, "getCommentSuggestions -- success -- no comments")
+                    }
+                    else {
+                        result = RawSuccessGetCommentsResult(it as JsonObject)
+                        Log.d(TAG, "getCommentSuggestions -- success -- $it")
+                    }
+                }
+            }
+        }
+        catch (e : Exception) {
+            result = FailureGetCommentsResult(e.message.toString())
+            Log.d(TAG, "getCommentSuggestions -- failure -- exception: -- ${e.message.toString()}")
+        }
+        emit(result)
+    }.flowOn(Dispatchers.IO)
 
 
 

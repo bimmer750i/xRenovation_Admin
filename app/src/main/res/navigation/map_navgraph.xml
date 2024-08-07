@@ -255,4 +255,12 @@
                 android:defaultValue="@null" />
         </fragment>
     </navigation>
+    <navigation android:id="@+id/comment_suggestions_navigation"
+        app:startDestination="@id/commentSuggestionsFragment">
+        <fragment
+            android:id="@+id/commentSuggestionsFragment"
+            android:name="broz.tito.xrenovation.presentation.CommentSuggestionsFragment"
+            android:label="fragment_comment_suggestions"
+            tools:layout="@layout/fragment_comment_suggestions" />
+    </navigation>
 </navigation>

@@ -95,4 +95,8 @@ class AddHouseRepositoryImpl @Inject constructor(val model: HouseModel) : AddHou
     override fun deleteSuggestedPoint(suggestedHouseId: String, accessToken: String): Flow<DeletePointResult> {
         return model.deleteSuggestedPoint(suggestedHouseId, accessToken)
     }
+
+    override fun getCommentSuggestions(): Flow<GetCommentsResult> {
+        return model.getCommentSuggestions()
+    }
 }

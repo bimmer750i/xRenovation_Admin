@@ -30,6 +30,9 @@ interface HouseService {
     @GET("houses-suggestions.json")
     suspend fun getHouseSuggestions() : Response<JsonElement>
 
+    @GET("comments-suggestions.json")
+    suspend fun getCommentSuggestions() : Response<JsonElement>
+
     @POST("comments/comments{houseId}.json")
     suspend fun addComment(@Path("houseId") houseId : String, @Body comment: Comment, @Query("auth") accessToken : String) : Response<AddCommentResponse>
 

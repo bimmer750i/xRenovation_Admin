@@ -2,19 +2,27 @@ package broz.tito.xrenovation.presentation.di
 
 import android.content.Context
 import broz.tito.xrenovation.admin.BuildConfig
-import broz.tito.xrenovation.data.add_house.HouseModel
 import broz.tito.xrenovation.data.add_house.AddHouseRepositoryImpl
+import broz.tito.xrenovation.data.add_house.HouseModel
 import broz.tito.xrenovation.data.add_house.HouseService
 import broz.tito.xrenovation.data.add_house.TimeService
-import broz.tito.xrenovation.data.auth.*
+import broz.tito.xrenovation.data.auth.AuthModel
+import broz.tito.xrenovation.data.auth.AuthService
+import broz.tito.xrenovation.data.auth.CaptchaRepositoryImpl
+import broz.tito.xrenovation.data.auth.CaptchaService
+import broz.tito.xrenovation.data.auth.EmailRepositoryImpl
+import broz.tito.xrenovation.data.auth.TokenService
 import broz.tito.xrenovation.data.interceptors.LiveNetworkMonitor
 import broz.tito.xrenovation.data.interceptors.NetworkMonitor
 import broz.tito.xrenovation.data.interceptors.NetworkMonitorInterceptor
 import broz.tito.xrenovation.data.sharedprefs.SharedPrefsModel
-import broz.tito.xrenovation.domain.*
+import broz.tito.xrenovation.domain.AddHouseRepository
+import broz.tito.xrenovation.domain.CaptchaRepository
+import broz.tito.xrenovation.domain.EmailRepository
 import com.google.firebase.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
+import com.google.gson.GsonBuilder
 import com.yandex.mapkit.search.SearchFactory
 import com.yandex.mapkit.search.SearchManager
 import com.yandex.mapkit.search.SearchManagerType
@@ -76,9 +84,12 @@ class DataModule {
 
     @Provides
     fun provideAddHouseService(client: OkHttpClient) : HouseService {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
         val retrofit = Retrofit.Builder()
             .baseUrl("https://${BuildConfig.PROJECT_ID}-default-rtdb.europe-west1.firebasedatabase.app")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client)
             .build()
         return retrofit.create(HouseService::class.java)
