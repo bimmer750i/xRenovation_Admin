@@ -99,4 +99,11 @@ class AddHouseRepositoryImpl @Inject constructor(val model: HouseModel) : AddHou
     override fun getCommentSuggestions(): Flow<GetCommentsResult> {
         return model.getCommentSuggestions()
     }
+
+    override fun deleteSuggestedComment(
+        suggestedCommentId: String,
+        accessToken: String
+    ): Flow<DeleteSuggestedCommentResult> {
+        return model.deleteSuggestedComment(suggestedCommentId, accessToken)
+    }
 }

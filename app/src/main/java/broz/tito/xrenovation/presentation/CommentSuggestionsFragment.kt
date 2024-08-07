@@ -35,10 +35,11 @@ class CommentSuggestionsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         (requireActivity().application as App).appComponent.inject(this)
         viewModel = ViewModelProvider(this,viewModelFactory)[CommentSuggestionsViewModel::class.java]
-        adapter = CommentSuggestionsRecyclerViewAdapter({houseId, commentId ->
-            Log.d(TAG, "publishHouse : $houseId -- $commentId")
+        adapter = CommentSuggestionsRecyclerViewAdapter({houseId, commentId,comment ->
+            viewModel.deleteSuggestedComment(requireContext(),commentId)
+            viewModel.addComment(requireContext(),comment)
         },{commentId ->
-            Log.d(TAG, "deleteHouse : $commentId")
+            viewModel.deleteSuggestedComment(requireContext(),commentId)
         })
     }
 

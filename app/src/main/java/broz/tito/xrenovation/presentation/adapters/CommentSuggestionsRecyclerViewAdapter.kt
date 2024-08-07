@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.CommentItemBinding
 import broz.tito.xrenovation.admin.databinding.CommentSuggestionItemBinding
+import broz.tito.xrenovation.data.add_house.entities.Comment
 import broz.tito.xrenovation.presentation.HouseFragmentDirections
 import broz.tito.xrenovation.presentation.entities.DisplayComment
 import com.bumptech.glide.Glide
@@ -17,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 
-class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : String, commentId : String) -> Unit, val deleteClicker : (commentId : String) -> Unit) : RecyclerView.Adapter<CommentSuggestionsRecyclerViewAdapter.ViewHolder>() {
+class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : String, commentId : String,comment : Comment) -> Unit, val deleteClicker : (commentId : String) -> Unit) : RecyclerView.Adapter<CommentSuggestionsRecyclerViewAdapter.ViewHolder>() {
 
     private val TAG = "CommentsRecyclerViewAdapter"
 
@@ -56,19 +57,22 @@ class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : Stri
 
         init {
             binding.imageViewCommentSuggestionOptions.setOnClickListener {
-                showMenu(binding.root.context,binding,commentItems.get(absoluteAdapterPosition).comment.houseId,commentItems.get(absoluteAdapterPosition).commentId)
+                showMenu(binding.root.context,binding,commentItems
+                    .get(absoluteAdapterPosition).comment.houseId,
+                    commentItems.get(absoluteAdapterPosition).commentId,
+                    commentItems.get(absoluteAdapterPosition).comment)
             }
         }
 
     }
 
-    private fun showMenu(context: Context,binding: CommentSuggestionItemBinding,houseId: String,commentId: String) {
+    private fun showMenu(context: Context,binding: CommentSuggestionItemBinding,houseId: String,commentId: String,comment: Comment) {
         val popupMenu = PopupMenu(context,binding.imageViewCommentSuggestionOptions)
         popupMenu.menuInflater.inflate(R.menu.comment_suggestion_menu,popupMenu.menu)
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.publish_comment -> {
-                    publishClicker.invoke(houseId, commentId)
+                    publishClicker.invoke(houseId, commentId,comment)
                 }
                 R.id.delete_comment -> {
                     deleteClicker.invoke(commentId)
