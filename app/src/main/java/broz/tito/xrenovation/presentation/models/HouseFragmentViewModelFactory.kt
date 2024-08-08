@@ -15,10 +15,11 @@ class HouseFragmentViewModelFactory @Inject constructor(val addCommentUseCase: A
                                                         val getAdminUseCase: GetAdminUseCase,
                                                         val deleteHouseUseCase: DeleteHouseUseCase,
                                                         val deletePointUseCase: DeletePointUseCase,
-                                                        val deleteHousePhotoUseCase: DeleteHousePhotoUseCase
+                                                        val deleteHousePhotoUseCase: DeleteHousePhotoUseCase,
+                                                        val deleteCommentUseCase: DeleteCommentUseCase
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return HouseFragmentViewModel(addCommentUseCase, getCommentsUseCase, getAccountInfoUseCase, refreshTokenUseCase, saveAuthResponseUseCase, sharedPrefsModel,getAdminUseCase,deleteHouseUseCase,deletePointUseCase,deleteHousePhotoUseCase) as T
+        return HouseFragmentViewModel(addCommentUseCase, getCommentsUseCase, getAccountInfoUseCase, refreshTokenUseCase, saveAuthResponseUseCase, sharedPrefsModel,getAdminUseCase,deleteHouseUseCase,deletePointUseCase,deleteHousePhotoUseCase,deleteCommentUseCase) as T
     }
 }

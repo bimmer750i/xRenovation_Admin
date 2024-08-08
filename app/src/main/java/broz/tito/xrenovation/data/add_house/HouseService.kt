@@ -71,4 +71,8 @@ interface HouseService {
 
     @DELETE("comments-suggestions/{suggestedCommentId}.json")
     suspend fun deleteSuggestedComment(@Path("suggestedCommentId") suggestedCommentId : String, @Query("auth") accessToken : String) : Response<JsonElement>
+
+    @DELETE("comments/comments{houseId}/{commentId}.json")
+    suspend fun deleteComment(@Path("houseId") houseId : String, @Path("commentId") commentId : String, @Query("auth") accessToken : String) : Response<JsonElement>
+
 }

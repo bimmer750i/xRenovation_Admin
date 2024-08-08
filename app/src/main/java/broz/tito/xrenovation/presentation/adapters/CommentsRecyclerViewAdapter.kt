@@ -1,18 +1,22 @@
 package broz.tito.xrenovation.presentation.adapters
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.CommentItemBinding
+import broz.tito.xrenovation.admin.databinding.CommentSuggestionItemBinding
+import broz.tito.xrenovation.data.add_house.entities.Comment
 import broz.tito.xrenovation.presentation.entities.DisplayComment
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CommentsRecyclerViewAdapter : RecyclerView.Adapter<CommentsRecyclerViewAdapter.ViewHolder>() {
+class CommentsRecyclerViewAdapter(val commentOptionsClicker : (houseId : String,commentId : String) -> Unit ) : RecyclerView.Adapter<CommentsRecyclerViewAdapter.ViewHolder>() {
 
     private val TAG = "CommentsRecyclerViewAdapter"
 
@@ -47,6 +51,28 @@ class CommentsRecyclerViewAdapter : RecyclerView.Adapter<CommentsRecyclerViewAda
         holder.binding.textViewCommentText.text = displayComment.comment.text
     }
 
-    inner class ViewHolder(val binding : CommentItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(val binding : CommentItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.imageViewCommentOptions.setOnClickListener {
+                showMenu(binding.imageViewCommentOptions.context,
+                    binding,
+                    commentItems.get(absoluteAdapterPosition).comment.houseId,
+                    commentItems.get(absoluteAdapterPosition).commentId)
+            }
+        }
+    }
+
+    private fun showMenu(context: Context, binding: CommentItemBinding, houseId: String, commentId: String) {
+        val popupMenu = PopupMenu(context,binding.imageViewCommentOptions)
+        popupMenu.menuInflater.inflate(R.menu.comment_menu,popupMenu.menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.delete_comment -> {
+                    commentOptionsClicker.invoke(houseId, commentId)
+                }
+            }
+            true }
+        popupMenu.show()
+    }
 
 }

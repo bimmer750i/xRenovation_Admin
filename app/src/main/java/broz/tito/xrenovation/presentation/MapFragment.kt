@@ -113,7 +113,7 @@ class MapFragment : Fragment() {
                     argBundle.putSerializable(MapBottomFragment.HOUSE,it.house)
                     argBundle.putString(MapBottomFragment.ID,it.houseId)
                     mapBottomFragment.arguments = argBundle
-                    mapBottomFragment.show(parentFragmentManager,"KFC")
+                    mapBottomFragment.show(childFragmentManager,"KFC")
                     viewModel.resetGetHouseResult()
                 }
             }

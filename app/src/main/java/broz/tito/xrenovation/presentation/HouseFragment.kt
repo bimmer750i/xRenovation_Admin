@@ -55,7 +55,9 @@ class HouseFragment : Fragment(),SnackBarAble {
         (requireActivity().application as App).appComponent.inject(this)
         viewModel = ViewModelProvider(this,houseFragmentViewModelFactory)[HouseFragmentViewModel::class.java]
         adapter = PhotoRecyclerViewAdapter(PhotoRecyclerViewAdapter.DISPLAY_PHOTO_VIEWHOLDER,{})
-        commentsAdapter = CommentsRecyclerViewAdapter()
+        commentsAdapter = CommentsRecyclerViewAdapter { houseId, commentId ->
+            viewModel.deleteComment(requireContext(), houseId, commentId)
+        }
     }
 
     override fun onCreateView(

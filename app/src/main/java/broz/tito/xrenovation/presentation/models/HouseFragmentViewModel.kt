@@ -26,7 +26,8 @@ class HouseFragmentViewModel @Inject constructor(val addCommentUseCase: AddComme
                                                  val getAdminUseCase: GetAdminUseCase,
                                                  val deleteHouseUseCase: DeleteHouseUseCase,
                                                  val deletePointUseCase: DeletePointUseCase,
-                                                 val deleteHousePhotoUseCase: DeleteHousePhotoUseCase) : ViewModel() {
+                                                 val deleteHousePhotoUseCase: DeleteHousePhotoUseCase,
+                                                 val deleteCommentUseCase: DeleteCommentUseCase) : ViewModel() {
 
     private val _getAccountInfoResult = MutableLiveData<GetAccountInfoResult>()
     val getAccountInfoResult : LiveData<GetAccountInfoResult> = _getAccountInfoResult
@@ -48,6 +49,9 @@ class HouseFragmentViewModel @Inject constructor(val addCommentUseCase: AddComme
 
     private val _deletePointResult = MutableLiveData<DeletePointResult>()
     val deletePointResult : LiveData<DeletePointResult> = _deletePointResult
+
+    private val _deleteCommentResult = MutableLiveData<DeleteSuggestedCommentResult>()
+    val deleteCommentResult : LiveData<DeleteSuggestedCommentResult> = _deleteCommentResult
 
     fun getAccountInfo(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -75,8 +79,6 @@ class HouseFragmentViewModel @Inject constructor(val addCommentUseCase: AddComme
             }.collect()
         }
     }
-
-
 
     fun getComments(houseId: String) {
         viewModelScope.launch {
@@ -115,5 +117,15 @@ class HouseFragmentViewModel @Inject constructor(val addCommentUseCase: AddComme
             deleteHousePhotoUseCase(photoList).collect()
         }
     }
+
+    fun deleteComment(context: Context,houseId: String, commentId : String) {
+        viewModelScope.launch {
+            deleteCommentUseCase(houseId,commentId,sharedPrefsModel.getIdToken(context)).onEach {
+                _deleteCommentResult.postValue(it)
+            }.collect()
+        }
+    }
+
+
 
 }

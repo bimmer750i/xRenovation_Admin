@@ -52,4 +52,6 @@ interface AddHouseRepository {
 
     fun deleteSuggestedComment(suggestedCommentId: String,accessToken: String) : Flow<DeleteSuggestedCommentResult>
 
+    fun deleteComment(houseId: String,commentId : String,accessToken: String) : Flow<DeleteSuggestedCommentResult>
+
 }

@@ -743,6 +743,27 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
         emit(result)
     }.flowOn(Dispatchers.IO)
 
+    fun deleteComment(houseId: String,commentId : String,accessToken: String) : Flow<DeleteSuggestedCommentResult> = flow {
+        var result : DeleteSuggestedCommentResult = PendingDeleteSuggestedCommentResult()
+        emit(result)
+        try {
+            val response = houseService.deleteComment(houseId, commentId, accessToken)
+            if (!response.isSuccessful) {
+                result = FailureDeleteSuggestedCommentResult(response.body().toString())
+                Log.d(TAG, "deleteComment -- failure -- ${response.message()} ")
+            }
+            else {
+                result = SuccessDeleteSuggestedCommentResult()
+                Log.d(TAG, "deleteComment -- success ")
+            }
+        }
+        catch (e : Exception) {
+            result = FailureDeleteSuggestedCommentResult(e.message.toString())
+            Log.d(TAG, "deleteComment -- failure -- ${e.message.toString()}")
+        }
+        emit(result)
+    }.flowOn(Dispatchers.IO)
+
 
 
     companion object {
