@@ -114,13 +114,6 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
     fun loadPhotosToFireBase(localId: String,path: String, list : ArrayList<String>) : Flow<LoadPhotosResult> = flow<LoadPhotosResult> {
         var result : LoadPhotosResult = PendingLoadPhotosResult()
         emit(result)
-        val lastTimePosted = getLastTimePosted(localId)
-        val now = getTime()
-        if (lastTimePosted != null && now != null && (now - lastTimePosted.lastTimePosted < MILLISECONDS_DAY)) {
-            result = FailureLoadPhotosResult("POST_TIMEOUT")
-            Log.d(TAG, "loadPhotosToFireBase -- failure: POST_TIMEOUT")
-        }
-        else if (lastTimePosted != null && now != null) {
             try {
                 val photosList = withContext(Dispatchers.IO) {async {
                     loadPhotos(path,list)
@@ -132,11 +125,7 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
                 result = FailureLoadPhotosResult(e.message.toString())
                 Log.d(TAG, "loadPhotosToFireBase -- ${e.message}")
             }
-        }
-        else {
-            result = FailureLoadPhotosResult("POST_TIMEOUT")
-            Log.d(TAG, "loadPhotosToFireBase -- failure: POST_TIMEOUT")
-        }
+
         emit(result)
     }.flowOn(Dispatchers.IO)
 
@@ -275,14 +264,6 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
     fun addComment(localId: String,houseId: String,comment: Comment, accessToken : String) : Flow<AddCommentResult> = flow {
         var result : AddCommentResult = PendingAddCommentResult()
         emit(result)
-        val lastTimePosted = getLastTimePosted(localId)
-        val now = getTime()
-        Log.d(TAG, "addComment -- lastTimePosted: ${lastTimePosted?.lastTimePosted}")
-        if (lastTimePosted?.lastTimePosted != null && now != null && (now - lastTimePosted.lastTimePosted < MILLISECONDS_DAY)) {
-            result = FailureAddCommentResult("POST_TIMEOUT")
-            Log.d(TAG, "addComment -- failure: POST_TIMEOUT")
-        }
-        else if (lastTimePosted != null && now != null) {
             try {
                 val time = Timestamp.now().seconds
                 comment.timeAdded = time
@@ -308,11 +289,6 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
                 result = FailureAddCommentResult(e.message.toString())
                 Log.d(TAG, "addComment -- failure: ${e.message}")
             }
-        }
-        else {
-            result = FailureAddCommentResult("POST_TIMEOUT")
-            Log.d(TAG, "addComment -- failure: POST_TIMEOUT")
-        }
         emit(result)
     }.flowOn(Dispatchers.IO)
 
@@ -345,7 +321,7 @@ class HouseModel @Inject constructor(val searchManager: SearchManager, val stora
         emit(result)
     }.flowOn(Dispatchers.IO)
 
-    // TODO CHECK TIME
+    // OK to have a time check 'cause it's not needed in Admin
     fun addHouseCorrection(localId : String, body : HouseCorrection, accessToken : String) : Flow<AddHouseCorrectionResult> = flow {
         var result : AddHouseCorrectionResult = PendingAddHouseCorrectionResult()
         emit(result)

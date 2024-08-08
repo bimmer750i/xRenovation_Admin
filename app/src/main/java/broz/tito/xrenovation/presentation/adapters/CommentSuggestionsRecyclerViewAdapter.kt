@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
 
-class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : String, commentId : String,comment : Comment) -> Unit, val deleteClicker : (commentId : String) -> Unit) : RecyclerView.Adapter<CommentSuggestionsRecyclerViewAdapter.ViewHolder>() {
+class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : String, commentId : String,comment : Comment) -> Unit, val deleteClicker : (commentId : String) -> Unit, val houseClicker : (houseId : String) -> Unit) : RecyclerView.Adapter<CommentSuggestionsRecyclerViewAdapter.ViewHolder>() {
 
     private val TAG = "CommentsRecyclerViewAdapter"
 
@@ -61,6 +61,9 @@ class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : Stri
                     .get(absoluteAdapterPosition).comment.houseId,
                     commentItems.get(absoluteAdapterPosition).commentId,
                     commentItems.get(absoluteAdapterPosition).comment)
+            }
+            binding.textViewCommentText.setOnClickListener {
+                houseClicker.invoke(commentItems.get(absoluteAdapterPosition).comment.houseId)
             }
         }
 

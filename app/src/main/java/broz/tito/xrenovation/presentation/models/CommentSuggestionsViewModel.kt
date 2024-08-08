@@ -9,10 +9,12 @@ import broz.tito.xrenovation.data.add_house.entities.AddCommentResult
 import broz.tito.xrenovation.data.add_house.entities.Comment
 import broz.tito.xrenovation.data.add_house.entities.DeleteSuggestedCommentResult
 import broz.tito.xrenovation.data.add_house.entities.GetCommentsResult
+import broz.tito.xrenovation.data.add_house.entities.GetHouseResult
 import broz.tito.xrenovation.data.sharedprefs.SharedPrefsModel
 import broz.tito.xrenovation.domain.AddCommentUseCase
 import broz.tito.xrenovation.domain.DeleteSuggestedCommentUseCase
 import broz.tito.xrenovation.domain.GetCommentSuggestionsUseCase
+import broz.tito.xrenovation.domain.GetHouseUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -23,7 +25,8 @@ class CommentSuggestionsViewModel @Inject constructor(
     private val sharedPrefsModel: SharedPrefsModel,
     private val commentSuggestionsUseCase: GetCommentSuggestionsUseCase,
     private val deleteSuggestedCommentUseCase: DeleteSuggestedCommentUseCase,
-    private val addCommentUseCase: AddCommentUseCase) :ViewModel()
+    private val addCommentUseCase: AddCommentUseCase,
+    private val getHouseUseCase: GetHouseUseCase) :ViewModel()
 {
         private val _getCommentSuggestions = MutableLiveData<GetCommentsResult>()
     val getCommentSuggestions : LiveData<GetCommentsResult> = _getCommentSuggestions
@@ -33,6 +36,9 @@ class CommentSuggestionsViewModel @Inject constructor(
 
     private val _addCommentResult  = MutableLiveData<AddCommentResult>()
     val addCommentResult : LiveData<AddCommentResult> = _addCommentResult
+
+    private val _getHouseResult = MutableLiveData<GetHouseResult>()
+    val getHouseResult : LiveData<GetHouseResult> = _getHouseResult
 
     fun getCommentSuggestions() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -58,7 +64,18 @@ class CommentSuggestionsViewModel @Inject constructor(
         }
     }
 
+    fun getHouse(houseId : String) {
+        viewModelScope.launch {
+            getHouseUseCase(houseId).onEach {
+                _getHouseResult.postValue(it)
+            }.collect()
+        }
+    }
 
-
+    fun clearState() {
+        _deleteSuggestedComment.postValue(DeleteSuggestedCommentResult())
+        _addCommentResult.postValue(AddCommentResult())
+        _getHouseResult.postValue(GetHouseResult())
+    }
 
 }

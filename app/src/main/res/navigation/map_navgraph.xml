@@ -261,6 +261,21 @@
             android:id="@+id/commentSuggestionsFragment"
             android:name="broz.tito.xrenovation.presentation.CommentSuggestionsFragment"
             android:label="fragment_comment_suggestions"
-            tools:layout="@layout/fragment_comment_suggestions" />
+            tools:layout="@layout/fragment_comment_suggestions">
+            <action
+                android:id="@+id/action_commentSuggestionsFragment_to_houseFragment"
+                app:destination="@id/houseFragment" />
+        </fragment>
+    <fragment
+        android:id="@+id/houseFragment"
+        android:name="broz.tito.xrenovation.presentation.HouseFragment"
+        android:label="HouseFragment" >
+        <argument
+            android:name="house"
+            app:argType="broz.tito.xrenovation.data.add_house.entities.House" />
+        <argument
+            android:name="houseId"
+            app:argType="string" />
+    </fragment>
     </navigation>
 </navigation>

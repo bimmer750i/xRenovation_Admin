@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.FragmentCommentSuggestionsBinding
 import broz.tito.xrenovation.data.add_house.entities.SuccessGetCommentsResult
+import broz.tito.xrenovation.data.add_house.entities.SuccessGetHouseResult
 import broz.tito.xrenovation.presentation.adapters.CommentSuggestionsRecyclerViewAdapter
 import broz.tito.xrenovation.presentation.models.CommentSuggestionsViewModel
 import broz.tito.xrenovation.presentation.models.CommentSuggestionsViewModelFactory
@@ -40,6 +42,8 @@ class CommentSuggestionsFragment : Fragment() {
             viewModel.addComment(requireContext(),comment)
         },{commentId ->
             viewModel.deleteSuggestedComment(requireContext(),commentId)
+        }, {houseId ->
+            viewModel.getHouse(houseId)
         })
     }
 
@@ -62,6 +66,15 @@ class CommentSuggestionsFragment : Fragment() {
                 }
             }
         })
+        viewModel.getHouseResult.observe(viewLifecycleOwner) {
+            when (it) {
+                is SuccessGetHouseResult -> {
+                    val directions = CommentSuggestionsFragmentDirections.actionCommentSuggestionsFragmentToHouseFragment(it.house,it.houseId)
+                    findNavController().navigate(directions)
+                    viewModel.clearState()
+                }
+            }
+        }
     }
 
     override fun onStart() {
