@@ -34,10 +34,15 @@ class HouseSuggestionsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         (requireActivity().application as App).appComponent.inject(this)
         viewModel = ViewModelProvider(this,viewModelFactory)[HouseSuggestionsFragmentViewModel::class.java]
-        houseSuggestionsRecyclerViewAdapter = HouseSuggestionsRecyclerViewAdapter() {houseId, house ->
+        houseSuggestionsRecyclerViewAdapter = HouseSuggestionsRecyclerViewAdapter({houseId, house ->
             val directions = HouseSuggestionsFragmentDirections.actionHouseSuggestionsFragmentToEditSuggestedHouseFragment(houseId, house)
             findNavController().navigate(directions)
-        }
+
+        }, { suggestedHouseId,urlList ->
+                viewModel.deleteSuggestedHouse(requireContext(),suggestedHouseId)
+                viewModel.deleteSuggestedPoint(requireContext(),suggestedHouseId)
+                viewModel.deleteSuggestedHousePhoto(urlList)
+            })
     }
 
     override fun onCreateView(

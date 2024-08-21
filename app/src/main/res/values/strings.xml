@@ -104,4 +104,5 @@
     <string name="publish_house">publish house</string>
     <string name="publish_comment">Publish comment</string>
     <string name="delete_comment">Delete comment</string>
+    <string name="delete_suggested_house">Delete house</string>
 </resources>

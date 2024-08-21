@@ -23,24 +23,29 @@ import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.AlertDialogAddUrlBinding
 import broz.tito.xrenovation.admin.databinding.FragmentEditSuggestedHouseBinding
 import broz.tito.xrenovation.data.add_house.entities.FailureEditHouseResult
+import broz.tito.xrenovation.data.add_house.entities.FailureLoadPhotosResult
 import broz.tito.xrenovation.data.add_house.entities.House
 import broz.tito.xrenovation.data.add_house.entities.HousePoint
 import broz.tito.xrenovation.data.add_house.entities.LatLon
 import broz.tito.xrenovation.data.add_house.entities.PendingEditHouseResult
+import broz.tito.xrenovation.data.add_house.entities.PendingLoadPhotosResult
 import broz.tito.xrenovation.data.add_house.entities.SearchPointAddress
 import broz.tito.xrenovation.data.add_house.entities.SuccessEditHouseResult
+import broz.tito.xrenovation.data.add_house.entities.SuccessLoadPhotosResult
 import broz.tito.xrenovation.presentation.adapters.PhotoItemTouchHelperCallback
 import broz.tito.xrenovation.presentation.adapters.PhotoRecyclerViewAdapter
+import broz.tito.xrenovation.presentation.interfaces.SnackBarAble
 import broz.tito.xrenovation.presentation.models.EditSuggestedHouseViewModel
 import broz.tito.xrenovation.presentation.models.EditSuggestedHouseViewModelFactory
 import com.google.android.material.chip.Chip
 import com.yandex.mapkit.geometry.Point
 import java.io.File
 import java.io.FileOutputStream
+import java.util.UUID
 import javax.inject.Inject
 
 
-class EditSuggestedHouseFragment : Fragment() {
+class EditSuggestedHouseFragment : Fragment(), SnackBarAble {
 
     private val TAG = "EditSuggestedHouseFragment"
 
@@ -101,6 +106,57 @@ class EditSuggestedHouseFragment : Fragment() {
         val itemTouchHelperCallback = PhotoItemTouchHelperCallback()
         val photoItemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         photoItemTouchHelper.attachToRecyclerView(binding.recyclerviewSuggestedHouseChosenPhoto)
+        binding.imageViewSuggestedHouseAddressLocation.setOnClickListener {
+            if (housePoint != null) {
+                val directions = EditSuggestedHouseFragmentDirections.actionEditSuggestedHouseFragmentToFindHouseOnMapFragment(
+                    LatLon(housePoint!!.latitude,housePoint!!.longitude)
+                )
+                findNavController().navigate(directions)
+            }
+            else {
+                findNavController().navigate(R.id.action_editSuggestedHouseFragment_to_findHouseOnMapFragment)
+            }
+        }
+        binding.imageViewSuggestedHouseAddButton.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        binding.chipSuggestedHouseAddUrl.setOnClickListener {
+            showAddUrlAlertDialog("",false,null)
+        }
+        binding.buttonPublishSuggestedHouse.setOnClickListener {
+            loadNewPhotos()
+        }
+        if (house != null) {
+            binding.autoCompleteTextViewSuggestedHouse.setText(house!!.address,false)
+            binding.editTextSuggestedHouseNumberOfFloors.setText(house!!.floors)
+            binding.editTextSuggestedHouseNumberOfFlats.setText(house!!.flats)
+            binding.editTextSuggestedHouseConstructionYear.setText(house!!.year)
+            binding.editTextSuggestedHouseDescription.setText(house!!.description)
+        }
+        urlList.forEach {
+            addChip(it)
+        }
+        viewModel.loadPhotosResult.observe(viewLifecycleOwner) {
+            when (it)  {
+                is PendingLoadPhotosResult -> {
+                    showSnackBarShort(this,binding.root,"Loading photos...")
+                }
+                is SuccessLoadPhotosResult -> {
+                    showSnackBarShort(this,binding.root,"Photos loaded successfully !")
+                    photoList.removeIf { !it.startsWith("https") }
+                    it.urlList.forEach {
+                        photoList.add(it)
+                    }
+                    Log.d(TAG, "PHOTO LIST TO PATCH : $photoList")
+                    publishSuggestedHouse()
+                }
+                is FailureLoadPhotosResult -> {
+                    showSnackBarShort(this,binding.root,"Oops ! Failure !")
+                    Log.d(TAG, "failureLoadPhotosResult: ${it.errorMessage}")
+                }
+
+            }
+        }
         viewModel.editHouseResult.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is PendingEditHouseResult -> {
@@ -117,30 +173,6 @@ class EditSuggestedHouseFragment : Fragment() {
 
             }
         })
-        binding.imageViewSuggestedHouseAddressLocation.setOnClickListener {
-            if (housePoint != null) {
-                val directions = EditSuggestedHouseFragmentDirections.actionEditSuggestedHouseFragmentToFindHouseOnMapFragment(
-                    LatLon(housePoint!!.latitude,housePoint!!.longitude)
-                )
-                findNavController().navigate(directions)
-            }
-            else {
-                findNavController().navigate(R.id.action_editSuggestedHouseFragment_to_findHouseOnMapFragment)
-            }
-        }
-        binding.imageViewSuggestedHouseAddButton.setOnClickListener {
-            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
-        if (house != null) {
-            binding.autoCompleteTextViewSuggestedHouse.setText(house!!.address,false)
-            binding.editTextSuggestedHouseNumberOfFloors.setText(house!!.floors)
-            binding.editTextSuggestedHouseNumberOfFlats.setText(house!!.flats)
-            binding.editTextSuggestedHouseConstructionYear.setText(house!!.year)
-            binding.editTextSuggestedHouseDescription.setText(house!!.description)
-        }
-        urlList.forEach {
-            addChip(it)
-        }
         parentFragmentManager.setFragmentResultListener(FindHouseOnMapFragment.MAP_RESULT,viewLifecycleOwner) { requestKey, bundle ->
             if (requestKey == FindHouseOnMapFragment.MAP_RESULT) {
                 var text : String? = ""
@@ -155,20 +187,7 @@ class EditSuggestedHouseFragment : Fragment() {
                 housePoint = Point(latitude,longitude)
             }
         }
-        binding.buttonPublishSuggestedHouse.setOnClickListener {
-            viewModel.deleteSuggestedHouse(requireContext(),houseId)
-            viewModel.deleteSuggestedPoint(requireContext(),houseId)
-            viewModel.publishSuggestedHouse(requireContext(),houseId,
-                House(LatLon(housePoint!!.latitude,housePoint!!.longitude),
-                binding.autoCompleteTextViewSuggestedHouse.text.toString(),
-                    binding.editTextSuggestedHouseNumberOfFloors.text.toString(),
-                    binding.editTextSuggestedHouseNumberOfFlats.text.toString(),
-                    binding.editTextSuggestedHouseConstructionYear.text.toString(),
-                    binding.editTextSuggestedHouseDescription.text.toString(),
-                    photoList,
-                    urlList)
-                )
-        }
+
 
     }
 
@@ -243,6 +262,30 @@ class EditSuggestedHouseFragment : Fragment() {
             }
             .create()
         dialog.show()
+    }
+
+    private fun loadNewPhotos() {
+        val newPhotoList = arrayListOf<String>()
+        newPhotoList.addAll(recyclerViewAdapter.list)
+        newPhotoList.removeIf { it.startsWith("https")}
+        Log.d(TAG, "editHouse: photos to be loaded: $newPhotoList")
+        viewModel.loadPhotosToFireBase(requireContext(),
+            UUID.randomUUID().toString().take(10),newPhotoList)
+    }
+
+    private fun publishSuggestedHouse() {
+        viewModel.deleteSuggestedHouse(requireContext(),houseId)
+        viewModel.deleteSuggestedPoint(requireContext(),houseId)
+        viewModel.publishSuggestedHouse(requireContext(),houseId,
+            House(LatLon(housePoint!!.latitude,housePoint!!.longitude),
+                binding.autoCompleteTextViewSuggestedHouse.text.toString(),
+                binding.editTextSuggestedHouseNumberOfFloors.text.toString(),
+                binding.editTextSuggestedHouseNumberOfFlats.text.toString(),
+                binding.editTextSuggestedHouseConstructionYear.text.toString(),
+                binding.editTextSuggestedHouseDescription.text.toString(),
+                photoList,
+                urlList)
+        )
     }
 
     private fun addChip(text : String) {

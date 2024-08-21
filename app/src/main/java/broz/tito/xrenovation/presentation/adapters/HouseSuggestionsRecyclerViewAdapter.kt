@@ -1,17 +1,22 @@
 package broz.tito.xrenovation.presentation.adapters
 
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import broz.tito.xrenovation.admin.R
+import broz.tito.xrenovation.admin.databinding.CommentSuggestionItemBinding
 import broz.tito.xrenovation.admin.databinding.HouseSuggestionItemBinding
+import broz.tito.xrenovation.data.add_house.entities.Comment
 import broz.tito.xrenovation.data.add_house.entities.House
 import broz.tito.xrenovation.presentation.entities.DisplayCorrection
 import broz.tito.xrenovation.presentation.entities.DisplayHouseSuggestion
 
-class HouseSuggestionsRecyclerViewAdapter(val displayItemClickListener : (String,House) -> Unit) : RecyclerView.Adapter<HouseSuggestionsRecyclerViewAdapter.ViewHolder>() {
+class HouseSuggestionsRecyclerViewAdapter(val displayItemClickListener : (String,House) -> Unit, val deleteClicker : (suggestedHouseId : String,urlList : ArrayList<String>) -> Unit) : RecyclerView.Adapter<HouseSuggestionsRecyclerViewAdapter.ViewHolder>() {
 
     var list : ArrayList<DisplayHouseSuggestion> = ArrayList()
         set(value) {
@@ -40,8 +45,24 @@ class HouseSuggestionsRecyclerViewAdapter(val displayItemClickListener : (String
             binding.CardViewHouseSuggestion.setOnClickListener {
                 displayItemClickListener.invoke(list.get(absoluteAdapterPosition).houseId,list.get(absoluteAdapterPosition).suggestedHouse)
             }
+            binding.imageViewSuggestionOptions.setOnClickListener {
+                showMenu(binding.root.context,binding,list.get(absoluteAdapterPosition).houseId,list.get(absoluteAdapterPosition).suggestedHouse.photos)
+            }
         }
 
+    }
+
+    private fun showMenu(context: Context, binding: HouseSuggestionItemBinding,suggestedHouseId: String,urlList : ArrayList<String>) {
+        val popupMenu = PopupMenu(context,binding.imageViewSuggestionOptions)
+        popupMenu.menuInflater.inflate(R.menu.house_suggestions_menu,popupMenu.menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.delete_suggested_house -> {
+                    deleteClicker.invoke(suggestedHouseId,urlList)
+                }
+            }
+            true }
+        popupMenu.show()
     }
 
 }
