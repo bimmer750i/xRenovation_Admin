@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.AlertDialogAddUrlBinding
 import broz.tito.xrenovation.admin.databinding.FragmentEditSuggestedHouseBinding
+import broz.tito.xrenovation.data.add_house.entities.FailureAddHousePointResult
 import broz.tito.xrenovation.data.add_house.entities.FailureEditHouseResult
 import broz.tito.xrenovation.data.add_house.entities.FailureLoadPhotosResult
 import broz.tito.xrenovation.data.add_house.entities.House
@@ -30,6 +31,7 @@ import broz.tito.xrenovation.data.add_house.entities.LatLon
 import broz.tito.xrenovation.data.add_house.entities.PendingEditHouseResult
 import broz.tito.xrenovation.data.add_house.entities.PendingLoadPhotosResult
 import broz.tito.xrenovation.data.add_house.entities.SearchPointAddress
+import broz.tito.xrenovation.data.add_house.entities.SuccessAddHousePointResult
 import broz.tito.xrenovation.data.add_house.entities.SuccessEditHouseResult
 import broz.tito.xrenovation.data.add_house.entities.SuccessLoadPhotosResult
 import broz.tito.xrenovation.presentation.adapters.PhotoItemTouchHelperCallback
@@ -139,10 +141,10 @@ class EditSuggestedHouseFragment : Fragment(), SnackBarAble {
         viewModel.loadPhotosResult.observe(viewLifecycleOwner) {
             when (it)  {
                 is PendingLoadPhotosResult -> {
-                    showSnackBarShort(this,binding.root,"Loading photos...")
+                    //showSnackBarShort(this,binding.root,"Loading photos...")
                 }
                 is SuccessLoadPhotosResult -> {
-                    showSnackBarShort(this,binding.root,"Photos loaded successfully !")
+                    //showSnackBarShort(this,binding.root,"Photos loaded successfully !")
                     photoList.removeIf { !it.startsWith("https") }
                     it.urlList.forEach {
                         photoList.add(it)
@@ -173,6 +175,17 @@ class EditSuggestedHouseFragment : Fragment(), SnackBarAble {
 
             }
         })
+        viewModel.addHousePointResult.observe(viewLifecycleOwner) {
+            when(it) {
+                is SuccessAddHousePointResult -> {
+                    binding.buttonPublishSuggestedHouse.revertAnimation()
+                    showSnackBarShort(this,binding.root,getString(R.string.success_add_suggested_house))
+                }
+                is FailureAddHousePointResult -> {
+                    binding.buttonPublishSuggestedHouse.revertAnimation()
+                }
+            }
+        }
         parentFragmentManager.setFragmentResultListener(FindHouseOnMapFragment.MAP_RESULT,viewLifecycleOwner) { requestKey, bundle ->
             if (requestKey == FindHouseOnMapFragment.MAP_RESULT) {
                 var text : String? = ""

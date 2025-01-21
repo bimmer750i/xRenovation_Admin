@@ -44,4 +44,8 @@ class MapFragmentViewModel @Inject constructor(val getPointsUseCase: GetPointsUs
         _getHouseResult.postValue(GetHouseResult())
     }
 
+    fun resetPointsResult() {
+        _getPointsResult.postValue(GetPointResult())
+    }
+
 }

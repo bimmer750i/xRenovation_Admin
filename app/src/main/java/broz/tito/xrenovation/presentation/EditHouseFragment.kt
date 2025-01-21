@@ -129,10 +129,8 @@ class EditHouseFragment : Fragment(),SnackBarAble {
         viewModel.loadPhotosResult.observe(viewLifecycleOwner) {
             when (it)  {
                 is PendingLoadPhotosResult -> {
-                    showSnackBarShort(this,binding.root,"Loading photos...")
                 }
                 is SuccessLoadPhotosResult -> {
-                    showSnackBarShort(this,binding.root,"Photos loaded successfully !")
                     photoList.removeIf { !it.startsWith("https") }
                     it.urlList.forEach {
                         photoList.add(it)
@@ -141,7 +139,7 @@ class EditHouseFragment : Fragment(),SnackBarAble {
                     viewModel.editHouse(requireContext(),houseId!!,House(LatLon(housePoint!!.latitude,housePoint!!.longitude),binding.autoCompleteTextView.text.toString(),binding.editTextNumberOfFloors.text.toString(),binding.editTextNumberOfFlats.text.toString(),binding.editTextConstructionYear.text.toString(),binding.editTextDescription.text.toString(),photoList,urlList))
                 }
                 is FailureLoadPhotosResult -> {
-                    showSnackBarShort(this,binding.root,"Oops ! Failure !")
+                    showSnackBarShort(this,binding.root,"Oops ! Failure loading photos!")
                     Log.d(TAG, "failureLoadPhotosResult: ${it.errorMessage}")
                 }
 
@@ -161,6 +159,12 @@ class EditHouseFragment : Fragment(),SnackBarAble {
                 is FailureEditHouseResult -> {
 
                 }
+            }
+        }
+        viewModel.editHouseResult.observe(viewLifecycleOwner) {
+            when (it) {
+                is SuccessEditHouseResult -> showSnackBarShort(this,binding.root,getString(R.string.success_add_suggested_house))
+                is FailureEditHouseResult -> showSnackBarShort(this,binding.root,getString(R.string.failure_add_suggested_house))
             }
         }
         parentFragmentManager.setFragmentResultListener(FindHouseOnMapFragment.MAP_RESULT,viewLifecycleOwner) { requestKey, bundle ->

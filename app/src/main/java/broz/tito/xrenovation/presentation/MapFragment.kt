@@ -134,6 +134,7 @@ class MapFragment : Fragment() {
         startLocation = binding.mapview.mapWindow.map.cameraPosition.target
         MapKitFactory.getInstance().onStop()
         binding.mapview.onStop()
+        viewModel.resetPointsResult()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

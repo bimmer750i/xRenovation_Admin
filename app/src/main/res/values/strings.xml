@@ -105,4 +105,12 @@
     <string name="publish_comment">Publish comment</string>
     <string name="delete_comment">Delete comment</string>
     <string name="delete_suggested_house">Delete house</string>
+    <string name="failure_delete_suggested_house_point">Failed to delete house</string>
+    <string name="success_delete_suggested_house_point">House deleted</string>
+    <string name="success_delete_suggested_comment">Comment deleted</string>
+    <string name="failure_delete_suggested_comment">Failed to delete comment</string>
+    <string name="success_add_suggested_comment">Comment added successfully</string>
+    <string name="failure_add_suggested_comment">Failed to publish comment</string>
+    <string name="success_add_suggested_house">House added successfully</string>
+    <string name="failure_add_suggested_house">Failed to add house</string>
 </resources>

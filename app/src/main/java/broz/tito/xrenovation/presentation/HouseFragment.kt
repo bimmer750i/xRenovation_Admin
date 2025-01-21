@@ -179,6 +179,10 @@ class HouseFragment : Fragment(),SnackBarAble {
                         binding.recyclerviewComments.visibility = View.VISIBLE
                         commentsAdapter.commentItems = it.commentsList
                     }
+                    else {
+                        binding.recyclerviewComments.visibility = View.GONE
+                        commentsAdapter.commentItems.clear()
+                    }
                 }
                 is FailureGetCommentsResult -> {
 
@@ -226,9 +230,26 @@ class HouseFragment : Fragment(),SnackBarAble {
                 is SuccessDeleteHouseResult -> {
                     viewModel.deletePoint(requireContext(),houseId!!)
                     viewModel.deleteHousePhoto(house!!.photos)
+                    showSnackBarShort(this,binding.root,getString(R.string.success_delete_suggested_house_point))
+                }
+                is FailureDeleteHouseResult -> {
+                    showSnackBarShort(this,binding.root,getString(R.string.failure_delete_suggested_house_point))
                 }
             }
         }
+        viewModel.deleteCommentResult.observe(viewLifecycleOwner) {
+            when (it) {
+                is SuccessDeleteSuggestedCommentResult -> {
+                    this.houseId?.let { it1 -> viewModel.getComments(it1);showSnackBarShort(this,binding.root,getString(R.string.success_delete_suggested_comment)) }
+
+                }
+                is FailureDeleteSuggestedCommentResult -> {
+                    showSnackBarShort(this,binding.root,getString(R.string.failure_delete_suggested_comment))
+                }
+
+            }
+        }
+
     }
 
     override fun onStart() {

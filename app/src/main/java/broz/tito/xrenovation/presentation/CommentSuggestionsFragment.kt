@@ -12,15 +12,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.FragmentCommentSuggestionsBinding
+import broz.tito.xrenovation.data.add_house.entities.FailureAddCommentResult
+import broz.tito.xrenovation.data.add_house.entities.FailureDeleteSuggestedCommentResult
+import broz.tito.xrenovation.data.add_house.entities.SuccessAddCommentResult
+import broz.tito.xrenovation.data.add_house.entities.SuccessDeleteSuggestedCommentResult
 import broz.tito.xrenovation.data.add_house.entities.SuccessGetCommentsResult
 import broz.tito.xrenovation.data.add_house.entities.SuccessGetHouseResult
 import broz.tito.xrenovation.presentation.adapters.CommentSuggestionsRecyclerViewAdapter
+import broz.tito.xrenovation.presentation.interfaces.SnackBarAble
 import broz.tito.xrenovation.presentation.models.CommentSuggestionsViewModel
 import broz.tito.xrenovation.presentation.models.CommentSuggestionsViewModelFactory
 import javax.inject.Inject
 
 
-class CommentSuggestionsFragment : Fragment() {
+class CommentSuggestionsFragment : Fragment(),SnackBarAble {
 
     private val TAG = "CommentSuggestionsFragment"
 
@@ -73,6 +78,18 @@ class CommentSuggestionsFragment : Fragment() {
                     findNavController().navigate(directions)
                     viewModel.clearState()
                 }
+            }
+        }
+        viewModel.deleteSuggestedComment.observe(viewLifecycleOwner) {
+            when (it) {
+                is SuccessDeleteSuggestedCommentResult -> viewModel.getCommentSuggestions()
+                is FailureDeleteSuggestedCommentResult -> showSnackBarShort(this,binding.root,getString(R.string.failure_delete_suggested_comment))
+            }
+        }
+        viewModel.addCommentResult.observe(viewLifecycleOwner) {
+            when (it) {
+                is SuccessAddCommentResult -> {viewModel.getCommentSuggestions();showSnackBarShort(this,binding.root,getString(R.string.success_add_suggested_comment))}
+                is FailureAddCommentResult -> showSnackBarShort(this,binding.root,getString(R.string.failure_add_suggested_comment))
             }
         }
     }

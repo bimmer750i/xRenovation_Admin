@@ -10,15 +10,18 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import broz.tito.xrenovation.admin.R
 import broz.tito.xrenovation.admin.databinding.FragmentHouseSuggestionsBinding
+import broz.tito.xrenovation.data.add_house.entities.FailureDeletePointResult
+import broz.tito.xrenovation.data.add_house.entities.SuccessDeletePointResult
 import broz.tito.xrenovation.data.add_house.entities.SuccessGetHouseSuggestionsResult
 import broz.tito.xrenovation.presentation.adapters.HouseSuggestionsRecyclerViewAdapter
+import broz.tito.xrenovation.presentation.interfaces.SnackBarAble
 import broz.tito.xrenovation.presentation.models.CorrectionsFragmentViewModelFactory
 import broz.tito.xrenovation.presentation.models.HouseSuggestionsFragmentViewModel
 import broz.tito.xrenovation.presentation.models.HouseSuggestionsFragmentViewModelFactory
 import javax.inject.Inject
 
 
-class HouseSuggestionsFragment : Fragment() {
+class HouseSuggestionsFragment : Fragment(),SnackBarAble {
 
     private lateinit var binding : FragmentHouseSuggestionsBinding
 
@@ -62,6 +65,12 @@ class HouseSuggestionsFragment : Fragment() {
                 is SuccessGetHouseSuggestionsResult -> {
                     houseSuggestionsRecyclerViewAdapter.list = it.houseSuggestionsList
                 }
+            }
+        }
+        viewModel.deleteSuggestedPointResult.observe(viewLifecycleOwner) {
+            when (it) {
+                is SuccessDeletePointResult -> { viewModel.getHouseSuggestionsResult();showSnackBarShort(this,binding.root,getString(R.string.success_delete_suggested_house_point)) }
+                is FailureDeletePointResult -> showSnackBarShort(this,binding.root,getString(R.string.failure_delete_suggested_house_point))
             }
         }
         viewModel.getHouseSuggestionsResult()

@@ -42,7 +42,7 @@ class CommentSuggestionsRecyclerViewAdapter(val publishClicker : (houseId : Stri
         Log.d(TAG, "onBindViewHolder -- comment -- ${displayComment.comment}")
         val sdf = SimpleDateFormat("dd/MM/YYYY HH:mm")
         sdf.timeZone = TimeZone.getDefault()
-        val date = sdf.format(Date(displayComment.comment.timeAdded*1000))
+        val date = sdf.format(Date(displayComment.comment.timeAdded))
         holder.binding.textViewTimeAdded.text = date
         Glide.with(holder.binding.root)
             .load(displayComment.comment.photoUrl)

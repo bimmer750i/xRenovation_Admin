@@ -37,6 +37,7 @@ class HouseSuggestionsRecyclerViewAdapter(val displayItemClickListener : (String
         val houseSuggestion = list.get(position)
         holder.binding.textViewSuggestionAddress.text = houseSuggestion.suggestedHouse.address
         holder.binding.textViewSuggestionText.text =houseSuggestion.suggestedHouse.description
+        holder.binding.textViewHouseLocalid.text = houseSuggestion.suggestedHouse.localid
     }
 
     inner class ViewHolder(val binding : HouseSuggestionItemBinding) : RecyclerView.ViewHolder(binding.root) {
